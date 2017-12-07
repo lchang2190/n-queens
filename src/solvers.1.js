@@ -39,50 +39,44 @@ window.findNRooksSolution = function(_n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
+  var solutionCount = 0;
 
-  var solutionCount = 0; 
+  //generate solutions array with n elements;
   var solutions = [];
 
-  var recurse = function(row = 0, moves = []) {
-    
-    for (var col = 0; col < n; col++) {
-      
-      //checking if column has already been used
-      if (moves.indexOf(col) === -1) {
-        nextMoves = moves.concat(col);
-        
-        nextRow = row + 1;
+  for (var i = 0; i < n; i++) {
+    solutions[i] = Math.pow(2, i);
+  }
 
-        //check that next row is still within the board
-        //if outside board boundary then we must have found
-        //a solution.
-        if (nextRow >= n) {
-          //var board = new Board({n:n});
+  results = [];
 
-          //create a new board representing the solution
-          //for( var movesRow = 0; movesRow < n; movesRow++) {
-            //board.togglePiece(movesRow, nextMoves[movesRow]);
-          //}
-          //double check that no conflicts exist
-          //if (!board.hasAnyRooksConflicts()) {
-            solutionCount++;
-            solutions.push(board);
-          //} else {
-            //console.log("FAIL");
-          //}
-          return;
-        }
+  var findSolutions = function(sol, rem) {
 
-        recurse(nextRow, nextMoves);
-      }
+    if (rem.length === 1) {
+      var s = sol.concat(rem[0]);
+      results.push(s);
+      solutionCount++;
+      return;
+
+    } else {
+      rem.forEach(function(value, index) {
+        var s = sol.concat(value);
+
+        var arr = [];
+        rem.forEach((v, i) => { 
+          if (i !== index) {
+            arr.push(v);
+          }
+        });
+        findSolutions(s, arr);
+      });
     }
   };
 
-  recurse();
-  //solutions.forEach((board) => console.log(JSON.stringify(board.rows())));
-  return solutionCount;
-};
+  findSolutions([], solutions);
 
+  return solutionCount; 
+};
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
